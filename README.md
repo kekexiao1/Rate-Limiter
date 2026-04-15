@@ -1,6 +1,6 @@
-# Rate-Limiter 分布式限流框架
+# Rate-Limiter 限流框架
 
-基于 Spring Boot 3.x 的高性能分布式限流框架，支持多种限流算法、动态配置、自动降级等企业级特性。
+基于 Spring Boot 3.x 的高性能限流框架，支持多种限流算法、动态配置、自动降级等特性。
 
 ## � 项目结构说明
 
@@ -212,81 +212,27 @@ spring:
 在 Nacos 配置中心创建 `rate-limiter-rules.yaml` 配置文件：
 
 ```yaml
-# 限流配置总开关
-enabled: true
-
-# Redis不可用时是否降级到本地限流
-fallback-to-local: true
-
-# 限流规则列表
-rules:
-  # API接口限流示例
-  - key: getUserById
-    limit: 1000
-    window: 60
-    algorithm: SLIDING_WINDOW
-  
-  - key: createUser
-    limit: 500
-    window: 60
-    algorithm: TOKEN_BUCKET
-  
-  - key: updateUser
-    limit: 300
-    window: 60
-    algorithm: SLIDING_WINDOW
-  
-  - key: deleteUser
-    limit: 100
-    window: 60
-    algorithm: SLIDING_WINDOW
-  
-  # 订单相关接口限流
-  - key: createOrder
-    limit: 200
-    window: 60
-    algorithm: TOKEN_BUCKET
-  
-  - key: cancelOrder
-    limit: 100
-    window: 60
-    algorithm: SLIDING_WINDOW
-  
-  # 支付接口限流（严格控制）
-  - key: payment
-    limit: 50
-    window: 60
-    algorithm: SLIDING_WINDOW
-  
-  # 查询接口限流（相对宽松）
-  - key: queryOrders
-    limit: 2000
-    window: 60
-    algorithm: SLIDING_WINDOW
-  
-  # 搜索接口限流
-  - key: search
-    limit: 3000
-    window: 60
-    algorithm: TOKEN_BUCKET
-  
-  # 文件上传限流
-  - key: uploadFile
-    limit: 20
-    window: 60
-    algorithm: SLIDING_WINDOW
-  
-  # 短信发送限流（严格控制）
-  - key: sendSms
-    limit: 10
-    window: 60
-    algorithm: SLIDING_WINDOW
-  
-  # 邮件发送限流
-  - key: sendEmail
-    limit: 50
-    window: 60
-    algorithm: SLIDING_WINDOW
+rate-limit:
+  enabled: true
+  fallback:
+    enabled: true 
+    limit: 500      
+    window: 1    
+    algorithm: LOCAL  
+  global:
+    enabled: true
+    limit: 50           
+    window: 1          
+    algorithm: SLIDING_WINDOW 
+  rules:
+    - key: "api:test:basic"
+      limit: 40       
+      window: 1         
+      algorithm: TOKEN_BUCKET 
+    - key: "'api:test:user:' + #userId"
+      limit: 400
+      window: 1
+      algorithm: SLIDING_WINDOW
 ```
 
 ### 配置字段说明
@@ -294,12 +240,11 @@ rules:
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | `enabled` | Boolean | 否 | 限流功能总开关，默认 true |
-| `fallback-to-local` | Boolean | 否 | Redis不可用时是否降级到本地限流，默认 true |
 | `rules` | List | 是 | 限流规则列表 |
 | `rules[].key` | String | 是 | 限流资源标识，需要与注解中的 key 对应 |
 | `rules[].limit` | Integer | 是 | 限流阈值，在时间窗口内允许的最大请求数 |
 | `rules[].window` | Integer | 是 | 时间窗口大小，单位：秒 |
-| `rules[].algorithm` | String | 是 | 限流算法类型：SLIDING_WINDOW 或 TOKEN_BUCKET |
+| `rules[].type` | String | 是 | 限流算法类型：SLIDING_WINDOW 或 TOKEN_BUCKET |
 
 ### 算法选择建议
 
