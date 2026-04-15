@@ -1,0 +1,5 @@
+com.xiao.ratelimitercore.CoreAutoConfiguration
+com.xiao.ratelimiterconfig.ConfigAutoConfiguration
+com.xiao.ratelimiterredis.RedisAutoConfiguration
+com.xiao.ratelimiterfallback.FallbackAutoConfiguration
+com.xiao.ratelimiterspringbootstarter.StarterAutoConfiguration
