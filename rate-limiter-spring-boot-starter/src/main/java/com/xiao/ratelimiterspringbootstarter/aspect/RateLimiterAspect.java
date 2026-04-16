@@ -67,7 +67,7 @@ public class RateLimiterAspect {
         // 获取限流参数，支持SpEL表达式
         String rawKey = rateLimiter.key();
 
-        String key=evaluateSpelExpression(rawKey, joinPoint, method);;
+        String key = evaluateSpelExpression(rawKey, joinPoint, method);
 
         RateLimitRule rule=null;
         if(redisHealthMonitor.isRedisAvailable()){
@@ -202,14 +202,7 @@ public class RateLimiterAspect {
         if (expression == null || expression.trim().isEmpty()) {
             return false;
         }
-
-        // 检测是否包含SpEL表达式模式
-        return expression.contains("#{") ||
-               expression.contains("$") ||
-               expression.contains("T(") ||
-               expression.contains("@") ||
-               expression.contains("{#") ||
-               expression.contains("${#");
+        return expression.contains("#{");
     }
 
     /**

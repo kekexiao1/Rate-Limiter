@@ -7,7 +7,9 @@
 
 -- 获取 Redis 服务端当前时间（防客户端时钟漂移）
 local currentTime = redis.call('TIME')
-local serverTime = tonumber(currentTime[1]) * 1000 + math.floor(tonumber(currentTime[2]) / 1000)
+-- 先拼成带小数的秒，再乘 1000 转毫秒，最后 floor 确保绝对是整数
+local serverTime = math.floor((tonumber(currentTime[1]) + tonumber(currentTime[2]) / 1000000) * 1000)
+
 
 -- 计算窗口起始时间
 local windowStartTime = serverTime - tonumber(ARGV[1])

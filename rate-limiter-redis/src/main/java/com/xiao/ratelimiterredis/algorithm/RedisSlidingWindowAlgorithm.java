@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 基于Redis的滑动窗口限流算法实现
@@ -29,7 +29,7 @@ public class RedisSlidingWindowAlgorithm implements RateLimitAlgorithm {
     public RateLimitResult tryAcquire(String key, RateLimitRule rule) {
         String redisKey = "rate_limit:" + key;
         long windowMillis = rule.getWindow() * 1000L;
-        String requestId = UUID.randomUUID().toString();
+        String requestId = String.valueOf(ThreadLocalRandom.current().nextLong());
         
         // 执行Lua脚本
         List<Long> result = scriptExecutor.execute(
